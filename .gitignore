@@ -46,16 +46,6 @@ install/
 *.npy
 *.npz
 
-# Video & image files
-*.mp4
-*.avi
-*.mov
-*.mkv
-*.webm
-*.gif
-*.bmp
-*.tiff
-*.webp
 
 # CSV / data logs
 *.csv
