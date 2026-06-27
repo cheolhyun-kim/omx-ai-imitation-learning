@@ -82,7 +82,9 @@ ROBOTIS OMX-AI 로봇 팔에서 ACT(Action Chunking with Transformers)를 이용
 
 ### 데이터 수집 영상
 
-https://github.com/cheolhyun-kim/omx-ai-imitation-learning/raw/main/assets/data_collection/data_collect.mp4
+
+https://github.com/user-attachments/assets/cf648b12-937d-4c4f-a8f6-d8004809b01a
+
 
 [YouTube에서 보기](https://youtu.be/JBE216r2U6A)
 
@@ -156,31 +158,41 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 
 #### 020k Steps (50%)
 
-https://github.com/cheolhyun-kim/omx-ai-imitation-learning/raw/main/assets/inference/Inference_20000.mp4
+
+https://github.com/user-attachments/assets/f75c6cb0-0c7c-4a2c-b353-f82cd4706368
+
 
 [YouTube에서 보기](https://youtu.be/YuQHmx89cCM)
 
 #### 040k Steps (83%)
 
-https://github.com/cheolhyun-kim/omx-ai-imitation-learning/raw/main/assets/inference/Inference_40000.mp4
+
+https://github.com/user-attachments/assets/86a429f1-ef09-4f8b-81c1-7f09a9df7278
+
 
 [YouTube에서 보기](https://youtu.be/s6fwgxGGtAk)
 
 #### 060k Steps (83%)
 
-https://github.com/cheolhyun-kim/omx-ai-imitation-learning/raw/main/assets/inference/Inference_60000.mp4
+
+https://github.com/user-attachments/assets/4c0c1815-07ea-41c4-a213-9088dcde4e17
+
 
 [YouTube에서 보기](https://youtu.be/SJT8HtYSkhY)
 
 #### 080k Steps (83%)
 
-https://github.com/cheolhyun-kim/omx-ai-imitation-learning/raw/main/assets/inference/Inference_80000.mp4
+
+https://github.com/user-attachments/assets/6a597adb-4678-4a53-812d-b5b6f3d0a8f5
+
 
 [YouTube에서 보기](https://youtu.be/jNEdFIn7p0s)
 
 #### 100k Steps (100%)
 
-https://github.com/cheolhyun-kim/omx-ai-imitation-learning/raw/main/assets/inference/Inference_100000.mp4
+
+https://github.com/user-attachments/assets/5f69d5f6-e097-44fb-901f-c06e884674b9
+
 
 [YouTube에서 보기](https://youtu.be/jQcLh0VwcxY)
 
