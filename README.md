@@ -217,9 +217,7 @@ https://github.com/user-attachments/assets/5f69d5f6-e097-44fb-901f-c06e884674b9
 |---|---|---|
 | DYNAMIXEL motor unresponsive | Faulty cable connection causing FastBulkRead errors | Diagnosed with Dynamixel Wizard 2.0 and re-seated motor cables |
 | v4l2_camera capturing wrong camera | USB device order changed on reboot, assigning the built-in IR camera | Identified correct device using `/sys/class/video4linux/video*/name` |
-| LeRobot version mismatch (Colab vs Docker) | "mean is infinity" inference error caused by different LeRobot versions | Pinned Colab environment to the same LeRobot version as the Physical AI Tools Docker container |
 | DroidCam "Connection reset" error | v4l2loopback kernel module not loaded | Ran `sudo modprobe v4l2loopback` |
-| Training CSV log not generated | Python module already loaded in memory before source code was modified | Restarted the container after modifying the trainer source; ensured output directory exists with `os.makedirs()` |
 
 ---
 
