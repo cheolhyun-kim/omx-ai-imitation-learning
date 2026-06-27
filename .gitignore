@@ -53,9 +53,6 @@ install/
 *.mkv
 *.webm
 *.gif
-*.png
-*.jpg
-*.jpeg
 *.bmp
 *.tiff
 *.webp
