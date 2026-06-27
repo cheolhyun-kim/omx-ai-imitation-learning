@@ -82,7 +82,7 @@ ROBOTIS OMX-AI 로봇 팔에서 ACT(Action Chunking with Transformers)를 이용
 
 ### 데이터 수집 영상
 
-https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/data_collection/data_collect.mp4
+<video src="https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/data_collection/data_collect.mp4" controls width="100%"></video>
 
 [YouTube에서 보기](https://youtu.be/JBE216r2U6A)
 
@@ -156,31 +156,31 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 
 #### 020k Steps (50%)
 
-https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_20000.mp4
+<video src="https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_20000.mp4" controls width="100%"></video>
 
 [YouTube에서 보기](https://youtu.be/YuQHmx89cCM)
 
 #### 040k Steps (83%)
 
-https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_40000.mp4
+<video src="https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_40000.mp4" controls width="100%"></video>
 
 [YouTube에서 보기](https://youtu.be/s6fwgxGGtAk)
 
 #### 060k Steps (83%)
 
-https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_60000.mp4
+<video src="https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_60000.mp4" controls width="100%"></video>
 
 [YouTube에서 보기](https://youtu.be/SJT8HtYSkhY)
 
 #### 080k Steps (83%)
 
-https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_80000.mp4
+<video src="https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_80000.mp4" controls width="100%"></video>
 
 [YouTube에서 보기](https://youtu.be/jNEdFIn7p0s)
 
 #### 100k Steps (100%)
 
-https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_100000.mp4
+<video src="https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_100000.mp4" controls width="100%"></video>
 
 [YouTube에서 보기](https://youtu.be/jQcLh0VwcxY)
 
