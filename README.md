@@ -1,160 +1,162 @@
-# OMX-AI 모방 학습 — ACT 기반 Pick and Place
+[한국어](README_KR.md) | [English](README.md)
 
-ROBOTIS OMX-AI 로봇 팔에서 ACT(Action Chunking with Transformers)를 이용해 Pick and Place 태스크를 수행하는 모방 학습 실험입니다.
+# OMX-AI Imitation Learning — ACT-Based Pick and Place
+
+Imitation learning experiment performing a Pick and Place task on the ROBOTIS OMX-AI robotic arm using ACT (Action Chunking with Transformers).
 
 ---
 
-## 목차
+## Table of Contents
 
-1. [프로젝트 개요](#1-프로젝트-개요)
-2. [환경 구성](#2-환경-구성)
-3. [데이터 수집](#3-데이터-수집)
-4. [학습](#4-학습)
-5. [실험 결과](#5-실험-결과)
-6. [주요 관찰 사항](#6-주요-관찰-사항)
+1. [Project Overview](#1-project-overview)
+2. [Environment Setup](#2-environment-setup)
+3. [Data Collection](#3-data-collection)
+4. [Training](#4-training)
+5. [Experimental Results](#5-experimental-results)
+6. [Key Observations](#6-key-observations)
 7. [Troubleshooting](#7-troubleshooting)
-8. [고찰](#8-고찰)
-9. [참고 자료](#9-참고-자료)
+8. [Discussion](#8-discussion)
+9. [References](#9-references)
 
 ---
 
-## 1. 프로젝트 개요
+## 1. Project Overview
 
-| 항목 | 내용 |
+| Item | Details |
 |---|---|
-| 로봇 | OMX-AI (ROBOTIS) |
-| 태스크 | Pick and Place |
-| 정책 | ACT (Action Chunking with Transformers) |
-| 도구 | Physical AI Tools, LeRobot, ROS2 |
-| 데이터셋 | 100 에피소드, 약 45,000 프레임, 30fps, 카메라 1대 |
-| HuggingFace 데이터셋 | [cheolhyunkim/omx_f_pick_and_place](https://huggingface.co/datasets/cheolhyunkim/omx_f_pick_and_place) |
-| **최종 결과** | **100K 체크포인트에서 6/6 위치 성공 (100% 성공률)** |
+| Robot | OMX-AI (ROBOTIS) |
+| Task | Pick and Place |
+| Policy | ACT (Action Chunking with Transformers) |
+| Tools | Physical AI Tools, LeRobot, ROS2 |
+| Dataset | 100 episodes, ~45,000 frames, 30fps, 1 camera |
+| HuggingFace Dataset | [cheolhyunkim/omx_f_pick_and_place](https://huggingface.co/datasets/cheolhyunkim/omx_f_pick_and_place) |
+| **Final Result** | **6/6 positions successful at 100K checkpoint (100% success rate)** |
 
-인간의 시연을 학습 데이터로 삼아 엔드-투-엔드 모방 학습을 구현하는 것이 목표입니다.
+The goal is to implement end-to-end imitation learning using human demonstrations as training data.
 
 ---
 
-## 2. 환경 구성
+## 2. Environment Setup
 
-### 하드웨어
+### Hardware
 
-- **로봇**: ROBOTIS OMX-AI (6-DOF)
-- **카메라**: APKO APC890W, 30fps
-- **학습 GPU**: NVIDIA RTX 5060 8GB (Laptop)
-- **미들웨어**: ROS2 Jazzy
+- **Robot**: ROBOTIS OMX-AI (6-DOF)
+- **Camera**: APKO APC890W, 30fps
+- **Training GPU**: NVIDIA RTX 5060 8GB (Laptop)
+- **Middleware**: ROS2 Jazzy
 
-### 소프트웨어 환경
+### Software Environment
 
-| 항목 | 내용 |
+| Item | Details |
 |---|---|
 | OS | Ubuntu 24.04 LTS |
 | ROS2 | Jazzy |
-| 컨테이너 | Docker + NVIDIA Container Toolkit |
+| Container | Docker + NVIDIA Container Toolkit |
 | Python | 3.12 |
-| 학습 프레임워크 | LeRobot (HuggingFace) |
-| 로봇 제어 | Physical AI Tools (ROBOTIS) |
+| Training Framework | LeRobot (HuggingFace) |
+| Robot Control | Physical AI Tools (ROBOTIS) |
 
-### 실행 환경
+### Runtime Environment
 
-![터미널 환경](assets/setup/terminal.png)
+![Terminal Environment](assets/setup/terminal.png)
 
-이 프로젝트에서 사용된 터미널 구성:
+Terminal layout used in this project:
 
-- **좌측 상단**: open_manipulator Docker 컨테이너 내부의 OMX 노드
-- **우측 상단**: physical_ai_tools Docker 컨테이너 내부의 카메라 노드 (v4l2_camera)
-- **하단**: physical_ai_tools Docker 컨테이너 내부의 Physical AI Tools 서버 노드
+- **Top-left**: OMX node inside the open_manipulator Docker container
+- **Top-right**: Camera node (v4l2_camera) inside the physical_ai_tools Docker container
+- **Bottom**: Physical AI Tools server node inside the physical_ai_tools Docker container
 
 ---
 
-## 3. 데이터 수집
+## 3. Data Collection
 
-| 항목 | 값 |
+| Item | Value |
 |---|---|
-| 에피소드 수 | 100 |
-| 총 프레임 수 | 약 45,000 |
-| 프레임 레이트 | 30 fps |
-| 해상도 | 640×480 |
-| 카메라 수 | 1 |
-| 수집 방식 | 텔레오퍼레이션 (리더-팔로워) |
-| 수집 도구 | Physical AI Tools + LeRobot |
+| Number of Episodes | 100 |
+| Total Frames | ~45,000 |
+| Frame Rate | 30 fps |
+| Resolution | 640×480 |
+| Number of Cameras | 1 |
+| Collection Method | Teleoperation (leader-follower) |
+| Collection Tools | Physical AI Tools + LeRobot |
 
-각 에피소드는 목표 물체를 집어 지정된 트레이에 올려놓는 단일 Pick-and-Place 사이클로 구성됩니다.
+Each episode consists of a single Pick-and-Place cycle: picking up a target object and placing it in a designated tray.
 
-### 데이터 수집 영상
+### Data Collection Video
 
 
 https://github.com/user-attachments/assets/cf648b12-937d-4c4f-a8f6-d8004809b01a
 
 
-[YouTube에서 보기](https://youtu.be/JBE216r2U6A)
+[Watch on YouTube](https://youtu.be/JBE216r2U6A)
 
 ---
 
-## 4. 학습
+## 4. Training
 
-### 학습 Loss 그래프
+### Training Loss Graph
 
-![학습 Loss](assets/results/training_loss.png)
+![Training Loss](assets/results/training_loss.png)
 
-**분석:**
-- **Total Loss**: 처음 5K step 이내에 급격히 감소하며 약 10K step 이후 안정화
-- **L1 Loss** (행동 예측): 약 0.03 수준으로 수렴하며 소폭 변동
-- **KLD Loss** (VAE 정규화): 5K step 이내에 거의 0으로 수렴
-- KLD의 빠른 수렴은 VAE 인코더가 빠르게 압축된 잠재 표현을 학습했음을 시사
+**Analysis:**
+- **Total Loss**: Drops sharply within the first 5K steps and stabilizes after ~10K steps
+- **L1 Loss** (action prediction): Converges to around 0.03 with minor fluctuations
+- **KLD Loss** (VAE regularization): Converges to nearly 0 within 5K steps
+- The fast convergence of KLD suggests the VAE encoder quickly learned a compact latent representation
 
-### 하이퍼파라미터
+### Hyperparameters
 
-| 항목 | 값 |
+| Item | Value |
 |---|---|
-| 정책 | ACT |
-| 백본 | ResNet-18 |
-| 배치 크기 | 32 |
-| 학습 스텝 | 100,000 |
-| 학습률 | 1e-5 |
-| 학습 시간 | 약 18시간 |
+| Policy | ACT |
+| Backbone | ResNet-18 |
+| Batch Size | 32 |
+| Training Steps | 100,000 |
+| Learning Rate | 1e-5 |
+| Training Time | ~18 hours |
 | GPU | NVIDIA RTX 5060 8GB (Laptop) |
-| 체크포인트 저장 주기 | 20,000 step |
+| Checkpoint Interval | 20,000 steps |
 
 ---
 
-## 5. 실험 결과
+## 5. Experimental Results
 
-### 실험 환경
+### Evaluation Setup
 
-![실험 그리드](assets/results/experiment_grid.jpg)
+![Experiment Grid](assets/results/experiment_grid.jpg)
 
-6개의 고정 위치에 물체를 놓고 체크포인트별로 Pick-and-Place 성공 여부를 테스트했습니다. 위치 인덱스는 아래와 같습니다.
+Objects were placed at 6 fixed positions, and Pick-and-Place success was tested for each checkpoint. Position indices are as follows:
 
 ```
-로봇
+Robot
  ↓
 [3] [6]
 [2] [5]
 [1] [4]
 ```
 
-Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 5, 6은 로봇에서 먼 쪽입니다.
+Position 3 is closest to the robot base; Positions 4, 5, and 6 are on the far side.
 
-### 평가 방법
+### Evaluation Protocol
 
-각 체크포인트를 작업 공간의 6개 고정 위치에 물체를 놓고 평가했습니다. 로봇은 물체를 집어 트레이에 놓는 동작을 시도합니다.
+Each checkpoint was evaluated by placing an object at each of the 6 fixed positions in the workspace. The robot attempts to pick up the object and place it in the tray.
 
-**범례:**
-- ✅ = 첫 시도 성공
-- ⚠️ = 조건부 성공 (재시도 필요 또는 불안정한 그리핑)
-- ❌ = 실패
+**Legend:**
+- ✅ = Success on first attempt
+- ⚠️ = Conditional success (retry required or unstable grasping)
+- ❌ = Failure
 
-### 위치별 상세 결과
+### Detailed Results by Position
 
-| 체크포인트 | Pos 1 | Pos 2 | Pos 3 | Pos 4 | Pos 5 | Pos 6 | 첫 시도 성공률 |
+| Checkpoint | Pos 1 | Pos 2 | Pos 3 | Pos 4 | Pos 5 | Pos 6 | 1st-Attempt Success Rate |
 |---|---|---|---|---|---|---|---|
-| 020k | ❌ | ✅ | ✅ | ✅ | ⚠️ 재시도 | ❌ | 3/6 (50%) |
+| 020k | ❌ | ✅ | ✅ | ✅ | ⚠️ retry | ❌ | 3/6 (50%) |
 | 040k | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | 5/6 (83%) |
 | 060k | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | 5/6 (83%) |
-| 080k | ⚠️ 재시도 | ✅ | ✅ | ✅ (불안정) | ✅ | ✅ | 5/6 (83%) |
+| 080k | ⚠️ retry | ✅ | ✅ | ✅ (unstable) | ✅ | ✅ | 5/6 (83%) |
 | 100k | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **6/6 (100%)** |
 
-### 체크포인트별 추론 영상
+### Inference Videos by Checkpoint
 
 #### 020k Steps (50%)
 
@@ -162,7 +164,7 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 https://github.com/user-attachments/assets/f75c6cb0-0c7c-4a2c-b353-f82cd4706368
 
 
-[YouTube에서 보기](https://youtu.be/YuQHmx89cCM)
+[Watch on YouTube](https://youtu.be/YuQHmx89cCM)
 
 #### 040k Steps (83%)
 
@@ -170,7 +172,7 @@ https://github.com/user-attachments/assets/f75c6cb0-0c7c-4a2c-b353-f82cd4706368
 https://github.com/user-attachments/assets/86a429f1-ef09-4f8b-81c1-7f09a9df7278
 
 
-[YouTube에서 보기](https://youtu.be/s6fwgxGGtAk)
+[Watch on YouTube](https://youtu.be/s6fwgxGGtAk)
 
 #### 060k Steps (83%)
 
@@ -178,7 +180,7 @@ https://github.com/user-attachments/assets/86a429f1-ef09-4f8b-81c1-7f09a9df7278
 https://github.com/user-attachments/assets/4c0c1815-07ea-41c4-a213-9088dcde4e17
 
 
-[YouTube에서 보기](https://youtu.be/SJT8HtYSkhY)
+[Watch on YouTube](https://youtu.be/SJT8HtYSkhY)
 
 #### 080k Steps (83%)
 
@@ -186,7 +188,7 @@ https://github.com/user-attachments/assets/4c0c1815-07ea-41c4-a213-9088dcde4e17
 https://github.com/user-attachments/assets/6a597adb-4678-4a53-812d-b5b6f3d0a8f5
 
 
-[YouTube에서 보기](https://youtu.be/jNEdFIn7p0s)
+[Watch on YouTube](https://youtu.be/jNEdFIn7p0s)
 
 #### 100k Steps (100%)
 
@@ -194,51 +196,51 @@ https://github.com/user-attachments/assets/6a597adb-4678-4a53-812d-b5b6f3d0a8f5
 https://github.com/user-attachments/assets/5f69d5f6-e097-44fb-901f-c06e884674b9
 
 
-[YouTube에서 보기](https://youtu.be/jQcLh0VwcxY)
+[Watch on YouTube](https://youtu.be/jQcLh0VwcxY)
 
 ---
 
-## 6. 주요 관찰 사항
+## 6. Key Observations
 
-- **100K 체크포인트에서 6/6 완벽한 성공률 달성** — 충분한 학습 스텝이 모든 위치에서의 강건한 일반화에 핵심적
-- **Position 1이 가장 어려운 위치** — 020k, 040k, 060k에서 유일하게 실패, 080k에서야 처음 성공(재시도 필요). 해당 영역의 학습 데이터가 상대적으로 부족했을 가능성
-- **040k, 060k, 080k 모두 동일한 83% 성공률** — 중간 학습 구간에서 정체 후 100k에서 최종 도약
-- **080k에서 Position 1 첫 성공** — 재시도가 필요했지만 처음으로 완료. Position 4에서는 불안정한 그리핑이 관찰되었으나 첫 시도에 성공
-- **성능 향상 패턴 (50% → 83% → 83% → 83% → 100%)** — 중반부 장기 정체 후 최종 체크포인트에서 도약하는 양상
-- 초기 체크포인트(020k~060k)의 성공 사례는 중앙 및 먼 영역(Position 2, 3, 4, 5)에 집중. 로봇 근처 영역(Position 1)은 가장 많은 학습이 필요
+- **Perfect 6/6 success rate achieved at the 100K checkpoint** — sufficient training steps are critical for robust generalization across all positions
+- **Position 1 was the hardest** — failed at 020k, 040k, and 060k; first succeeded (with retry) at 080k, suggesting relatively sparse training data coverage for that region
+- **040k, 060k, and 080k all plateau at 83%** — performance stagnated in the mid-training range before a final jump at 100k
+- **First success at Position 1 was at 080k** — required a retry but completed for the first time; unstable grasping was observed at Position 4 at 080k, though it succeeded on the first attempt
+- **Performance progression (50% → 83% → 83% → 83% → 100%)** — a long plateau in the middle followed by a leap at the final checkpoint
+- Early checkpoints (020k–060k) concentrated successes in the center and far regions (Positions 2, 3, 4, 5); the near-robot region (Position 1) required the most training
 
 ---
 
 ## 7. Troubleshooting
 
-| 문제 | 원인 | 해결 |
+| Issue | Cause | Resolution |
 |---|---|---|
-| DYNAMIXEL 모터 무응답 | 케이블 연결 불량으로 FastBulkRead 에러 발생 | Dynamixel Wizard 2.0으로 진단 후 모터 케이블 재연결 |
-| v4l2_camera가 잘못된 카메라 캡처 | 리부팅 시 USB 장치 순서 변경, 내장 IR 카메라가 할당됨 | `/sys/class/video4linux/video*/name`으로 올바른 장치 확인 |
-| LeRobot 버전 불일치 (Colab vs Docker) | 서로 다른 LeRobot 버전으로 인해 "mean is infinity" 추론 에러 | Colab 환경을 Physical AI Tools Docker 컨테이너와 동일한 LeRobot 버전으로 고정 |
-| DroidCam "Connection reset" 에러 | v4l2loopback 커널 모듈 미로드 | `sudo modprobe v4l2loopback` 실행 |
-| 학습 CSV 로그 미생성 | 소스 코드 수정 전에 이미 Python 모듈이 메모리에 로드됨 | 트레이너 소스 코드 수정 후 컨테이너 재시작, `os.makedirs()`로 출력 디렉토리 존재 보장 |
+| DYNAMIXEL motor unresponsive | Faulty cable connection causing FastBulkRead errors | Diagnosed with Dynamixel Wizard 2.0 and re-seated motor cables |
+| v4l2_camera capturing wrong camera | USB device order changed on reboot, assigning the built-in IR camera | Identified correct device using `/sys/class/video4linux/video*/name` |
+| LeRobot version mismatch (Colab vs Docker) | "mean is infinity" inference error caused by different LeRobot versions | Pinned Colab environment to the same LeRobot version as the Physical AI Tools Docker container |
+| DroidCam "Connection reset" error | v4l2loopback kernel module not loaded | Ran `sudo modprobe v4l2loopback` |
+| Training CSV log not generated | Python module already loaded in memory before source code was modified | Restarted the container after modifying the trainer source; ensured output directory exists with `os.makedirs()` |
 
 ---
 
-## 8. 고찰
+## 8. Discussion
 
-#### 물체 형상과 그리핑 전략
+#### Object Shape and Grasping Strategy
 
-이전 학습에서는 정사각형 박스를 pick 대상으로 사용했다. 그러나 사각형의 면에 따라 그리퍼가 잡아야 할 각도가 계속 달라지는 문제가 있었다. 그리퍼 위에 근접 카메라가 없어 학습 데이터를 제대로 수집하더라도 올바른 그립 각도를 추론해내지 못했다. 향후 그리퍼에 카메라를 추가하여 물체의 그립 포인트까지 추론하는 태스크를 진행해보고 싶다.
+In a previous training run, a square box was used as the pick target. However, the gripper had to adjust its approach angle depending on which face of the box was presented, which proved problematic. Without a close-up camera mounted on the gripper, the model could not infer the correct grasp angle even with a proper training dataset. In future work, I would like to add a wrist-mounted camera and tackle the task of inferring grasp points on the object.
 
-#### 데이터 품질의 중요성
+#### Importance of Data Quality
 
-이전 학습에서는 데이터셋 수집 과정에서 그리퍼가 실수로 물체를 떨어뜨리거나, 카메라 앵글 안에 조작자의 손이 자주 들어갔다 나오는 등의 노이즈를 크게 신경쓰지 않고 데이터를 수집했다. 이렇게 노이즈가 많이 포함된 데이터를 바탕으로 학습시켰을 때, 로봇은 시연과 전혀 다른 불규칙한 동작을 보이며 태스크를 제대로 수행하지 못했다. 이번 프로젝트를 통해 데이터의 품질이 추론 성능에 큰 영향을 미친다는 점을 깨닫게 되었다. 깨끗하고 일관된 시연 데이터가 모방학습의 성공에 필수적이다.
+In the previous training run, noisy demonstrations were collected without much attention to quality — the gripper occasionally dropped the object mid-episode, and the operator's hand frequently entered and exited the camera frame. Training on such noisy data led the robot to exhibit erratic, inconsistent behavior far from what was demonstrated. This project reinforced how significantly data quality affects inference performance. Clean and consistent demonstration data is essential for successful imitation learning.
 
 ---
 
-## 9. 참고 자료
+## 9. References
 
 - [ACT: Action Chunking with Transformers](https://tonyzhaozh.github.io/aloha/) — Zhao et al., 2023
 - [LeRobot](https://github.com/huggingface/lerobot) — HuggingFace
 - [Physical AI Tools](https://github.com/ROBOTIS-GIT/physical_ai_tools) — ROBOTIS
-- [ROBOTIS OMX-AI](https://www.robotis.com) — 로봇 하드웨어
+- [ROBOTIS OMX-AI](https://www.robotis.com) — Robot Hardware
 - [ROS2](https://docs.ros.org)
-- 데이터셋: [cheolhyunkim/omx_f_pick_and_place](https://huggingface.co/datasets/cheolhyunkim/omx_f_pick_and_place)
-- 유튜브 재생목록: [OMX-AI ACT Imitation Learning](https://www.youtube.com/playlist?list=PLPGPIB1GJkoY)
+- Dataset: [cheolhyunkim/omx_f_pick_and_place](https://huggingface.co/datasets/cheolhyunkim/omx_f_pick_and_place)
+- YouTube Playlist: [OMX-AI ACT Imitation Learning](https://www.youtube.com/playlist?list=PLPGPIB1GJkoY)
