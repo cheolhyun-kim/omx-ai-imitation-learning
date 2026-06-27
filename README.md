@@ -7,12 +7,12 @@ ROBOTIS OMX-AI 로봇 팔에서 ACT(Action Chunking with Transformers)를 이용
 ## 목차
 
 1. [프로젝트 개요](#1-프로젝트-개요)
-2. [하드웨어 구성](#2-하드웨어-구성)
+2. [환경 구성](#2-환경-구성)
 3. [데이터 수집](#3-데이터-수집)
 4. [학습](#4-학습)
 5. [실험 결과](#5-실험-결과)
 6. [주요 관찰 사항](#6-주요-관찰-사항)
-7. [문제 해결](#7-문제-해결)
+7. [Troubleshooting](#7-troubleshooting)
 8. [고찰](#8-고찰)
 9. [참고 자료](#9-참고-자료)
 
@@ -34,7 +34,7 @@ ROBOTIS OMX-AI 로봇 팔에서 ACT(Action Chunking with Transformers)를 이용
 
 ---
 
-## 2. 하드웨어 구성
+## 2. 환경 구성
 
 ### 하드웨어
 
@@ -64,22 +64,6 @@ ROBOTIS OMX-AI 로봇 팔에서 ACT(Action Chunking with Transformers)를 이용
 - **우측 상단**: physical_ai_tools Docker 컨테이너 내부의 카메라 노드 (v4l2_camera)
 - **하단**: physical_ai_tools Docker 컨테이너 내부의 Physical AI Tools 서버 노드
 
-### 실험 그리드
-
-![실험 그리드](assets/setup/experiment_grid.jpg)
-
-6개의 고정 위치에 물체를 놓고 체크포인트별로 Pick-and-Place 성공 여부를 테스트했습니다. 위치 인덱스는 아래와 같습니다.
-
-```
-로봇
- ↓
-[3] [6]
-[2] [5]
-[1] [4]
-```
-
-Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 5, 6은 로봇에서 먼 쪽입니다.
-
 ---
 
 ## 3. 데이터 수집
@@ -98,7 +82,9 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 
 ### 데이터 수집 영상
 
-[![데이터 수집 영상](https://img.youtube.com/vi/JBE216r2U6A/maxresdefault.jpg)](https://youtu.be/JBE216r2U6A)
+https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/data_collection/data_collect.mp4
+
+[YouTube에서 보기](https://youtu.be/JBE216r2U6A)
 
 ---
 
@@ -130,6 +116,8 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 ---
 
 ## 5. 실험 결과
+
+### 실험 환경
 
 ![실험 그리드](assets/results/experiment_grid.jpg)
 
@@ -168,23 +156,33 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 
 #### 020k Steps (50%)
 
-[![020k](https://img.youtube.com/vi/YuQHmx89cCM/maxresdefault.jpg)](https://youtu.be/YuQHmx89cCM)
+https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_20000.mp4
+
+[YouTube에서 보기](https://youtu.be/YuQHmx89cCM)
 
 #### 040k Steps (83%)
 
-[![040k](https://img.youtube.com/vi/s6fwgxGGtAk/maxresdefault.jpg)](https://youtu.be/s6fwgxGGtAk)
+https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_40000.mp4
+
+[YouTube에서 보기](https://youtu.be/s6fwgxGGtAk)
 
 #### 060k Steps (83%)
 
-[![060k](https://img.youtube.com/vi/SJT8HtYSkhY/maxresdefault.jpg)](https://youtu.be/SJT8HtYSkhY)
+https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_60000.mp4
+
+[YouTube에서 보기](https://youtu.be/SJT8HtYSkhY)
 
 #### 080k Steps (83%)
 
-[![080k](https://img.youtube.com/vi/jNEdFIn7p0s/maxresdefault.jpg)](https://youtu.be/jNEdFIn7p0s)
+https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_80000.mp4
 
-#### 100k Steps (100%) 🎯
+[YouTube에서 보기](https://youtu.be/jNEdFIn7p0s)
 
-[![100k](https://img.youtube.com/vi/jQcLh0VwcxY/maxresdefault.jpg)](https://youtu.be/jQcLh0VwcxY)
+#### 100k Steps (100%)
+
+https://github.com/cheolhyun-kim/omx-f-imitation-learning/raw/main/assets/inference/Inference_100000.mp4
+
+[YouTube에서 보기](https://youtu.be/jQcLh0VwcxY)
 
 ---
 
@@ -199,7 +197,7 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 
 ---
 
-## 7. 문제 해결
+## 7. Troubleshooting
 
 | 문제 | 원인 | 해결 |
 |---|---|---|
@@ -219,7 +217,7 @@ Position 3이 로봇 베이스에서 가장 가까운 위치이며, Position 4, 
 
 #### 데이터 품질의 중요성
 
-이전 학습에서는 데이터셋 수집 과정에서 그리퍼가 실수로 물체를 떨어뜨리거나, 카메라 앵글 안에 조작자의 손이 자주 들어갔다 나오는 등의 노이즈를 크게 신경쓰지 않고 데이터를 수집했다. 그러나 이번 프로젝트를 통해 데이터의 품질이 추론 성능에 큰 영향을 미친다는 점을 깨닫게 되었다. 깨끗하고 일관된 시연 데이터가 모방학습의 성공에 필수적이다.
+이전 학습에서는 데이터셋 수집 과정에서 그리퍼가 실수로 물체를 떨어뜨리거나, 카메라 앵글 안에 조작자의 손이 자주 들어갔다 나오는 등의 노이즈를 크게 신경쓰지 않고 데이터를 수집했다. 이렇게 노이즈가 많이 포함된 데이터를 바탕으로 학습시켰을 때, 로봇은 시연과 전혀 다른 불규칙한 동작을 보이며 태스크를 제대로 수행하지 못했다. 이번 프로젝트를 통해 데이터의 품질이 추론 성능에 큰 영향을 미친다는 점을 깨닫게 되었다. 깨끗하고 일관된 시연 데이터가 모방학습의 성공에 필수적이다.
 
 ---
 
